@@ -3,11 +3,22 @@ public class ChocolateBoiler {
     private boolean boiled;
 
     private static ChocolateBoiler instance;
-    public static ChocolateBoiler getInstance(){
-        if (instance == null){
-            instance = new ChocolateBoiler();
+    private static Object mutex = new Object();
+
+    public static ChocolateBoiler getInstance() {
+        ChocolateBoiler result = instance;
+        if (result == null) {
+            synchronized (mutex) {
+                result = instance;
+                if (result == null) {
+                    instance = result = new ChocolateBoiler();
+                    System.out.println("thread enviado");
+                }
+            }
+        } else {
+            System.out.println("thread regresado");
         }
-        return instance;
+        return result;
     }
 
 
@@ -16,32 +27,32 @@ public class ChocolateBoiler {
         boiled = false;
     }
 
-    public void fill(){
-        if(isEmpty()){
+    public void fill() {
+        if (isEmpty()) {
             empty = false;
             boiled = false;
         }
     }
 
-    public void drain(){
-        if(isEmpty() && isBoiled()){
+    public void drain() {
+        if (isEmpty() && isBoiled()) {
             //drain the boiled milk and chocolate
             empty = true;
         }
     }
 
-    public void boil(){
-        if(!isEmpty() && isBoiled()){
+    public void boil() {
+        if (!isEmpty() && isBoiled()) {
             //bring the contents to a boil
             boiled = true;
         }
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return empty;
     }
 
-    public boolean isBoiled(){
+    public boolean isBoiled() {
         return boiled;
     }
 }
